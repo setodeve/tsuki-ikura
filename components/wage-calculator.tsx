@@ -1,18 +1,19 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { usePresets } from "@/hooks/use-presets";
 import {
   calculateIncome,
   createDefaultConditions,
   formatCurrency,
   validateWorkConditions,
 } from "@/lib/calculations";
-import type { CalculationResult, Preset, WorkConditions, WeeklySchedule } from "@/lib/types";
-import { WeeklySchedule as WeeklyScheduleComponent } from "./weekly-schedule";
-import { PresetManager } from "./preset-manager";
+import type {
+  CalculationResult,
+  WeeklySchedule,
+  WorkConditions,
+} from "@/lib/types";
 import { InputField } from "./ui/input-field";
-import { ResultCard } from "./ui/result-card";
+import { WeeklyScheduleForm } from "./weekly-schedule";
 
 export function WageCalculator() {
   const [conditions, setConditions] = useState<WorkConditions>(() =>
@@ -20,8 +21,6 @@ export function WageCalculator() {
   );
   const [results, setResults] = useState<CalculationResult | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
-
-  const { presets, savePreset, deletePreset } = usePresets();
 
   const calculate = useCallback(() => {
     const validationErrors = validateWorkConditions(conditions);
@@ -43,10 +42,6 @@ export function WageCalculator() {
       ...prev,
       [field]: Number.isNaN(numValue) ? 0 : numValue,
     }));
-  };
-
-  const handleLoadPreset = (preset: Preset) => {
-    setConditions(preset.conditions);
   };
 
   const handleMonthSelect = (year: number, month: number) => {
@@ -79,9 +74,17 @@ export function WageCalculator() {
           <div>
             <h2 className="text-sm font-medium text-blue-900 mb-2">使い方</h2>
             <ol className="text-xs text-blue-800 space-y-1">
-              <li><span className="font-medium">1.</span> 時給を入力</li>
-              <li><span className="font-medium">2.</span> 月〜日曜日の労働時間を個別に設定</li>
-              <li><span className="font-medium">3.</span> 計算対象月を選択(デフォルトは来月設定)</li>
+              <li>
+                <span className="font-medium">1.</span> 時給を入力
+              </li>
+              <li>
+                <span className="font-medium">2.</span>{" "}
+                月〜日曜日の労働時間を個別に設定
+              </li>
+              <li>
+                <span className="font-medium">3.</span>{" "}
+                計算対象月を選択(デフォルトは来月設定)
+              </li>
             </ol>
           </div>
         </div>
@@ -99,7 +102,7 @@ export function WageCalculator() {
           </div>
 
           <div className="rounded-lg bg-white p-6 shadow-md">
-            <WeeklyScheduleComponent
+            <WeeklyScheduleForm
               schedule={conditions.weeklySchedule}
               onChange={handleWeeklyScheduleChange}
             />
@@ -141,7 +144,7 @@ export function WageCalculator() {
                       value={`${targetYear}-${adjustedMonth}`}
                     >
                       {targetYear}年{adjustedMonth}月
-                    </option>
+                    </option>,
                   );
                 }
                 return options;
@@ -169,7 +172,9 @@ export function WageCalculator() {
               {results.calculationBreakdown && (
                 <div className="rounded-lg bg-blue-50 p-3 mb-6">
                   <p className="text-sm text-blue-900 text-center">
-                    {results.calculationBreakdown.year}年{results.calculationBreakdown.month}月（{results.calculationBreakdown.totalDays}日間）
+                    {results.calculationBreakdown.year}年
+                    {results.calculationBreakdown.month}月（
+                    {results.calculationBreakdown.totalDays}日間）
                   </p>
                 </div>
               )}
@@ -191,7 +196,9 @@ export function WageCalculator() {
                       {formatCurrency(results.averageDaily)}
                     </div>
                     <div className="text-xs text-gray-500">
-                      {results.calculationBreakdown ? `${results.calculationBreakdown.totalDays}日で割った平均` : "30日で割った平均"}
+                      {results.calculationBreakdown
+                        ? `${results.calculationBreakdown.totalDays}日で割った平均`
+                        : "30日で割った平均"}
                     </div>
                   </div>
                   <div className="text-center p-3 bg-gray-50 rounded-lg">

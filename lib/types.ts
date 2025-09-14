@@ -9,7 +9,6 @@ export interface WeeklySchedule {
   sunday: number;
 }
 
-
 export interface WorkConditions {
   hourly: number;
   weeklySchedule: WeeklySchedule;

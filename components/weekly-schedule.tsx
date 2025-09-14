@@ -1,7 +1,7 @@
 "use client";
 
-import { InputField } from "./ui/input-field";
 import type { WeeklySchedule } from "@/lib/types";
+import { InputField } from "./ui/input-field";
 
 interface WeeklyScheduleProps {
   schedule: WeeklySchedule;
@@ -18,7 +18,10 @@ const dayLabels = [
   { key: "sunday", label: "日", fullLabel: "日曜日" },
 ] as const;
 
-export function WeeklySchedule({ schedule, onChange }: WeeklyScheduleProps) {
+export function WeeklyScheduleForm({
+  schedule,
+  onChange,
+}: WeeklyScheduleProps) {
   const handleDayChange = (day: keyof WeeklySchedule, value: string) => {
     const numValue = value === "" ? 0 : parseFloat(value);
     onChange({
@@ -39,7 +42,7 @@ export function WeeklySchedule({ schedule, onChange }: WeeklyScheduleProps) {
   return (
     <div className="space-y-4">
       <div className="space-y-3">
-        {dayLabels.map(({ key, label, fullLabel }) => (
+        {dayLabels.map(({ key, fullLabel }) => (
           <div key={key} className="flex items-center gap-3">
             <div className="flex-1">
               <InputField

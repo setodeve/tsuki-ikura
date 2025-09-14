@@ -1,5 +1,9 @@
 import { calculateMonthlyWorkDays, getNextMonth } from "./calendar";
-import type { CalculationResult, WorkConditions, WeeklySchedule } from "./types";
+import type {
+  CalculationResult,
+  WeeklySchedule,
+  WorkConditions,
+} from "./types";
 
 /**
  * デフォルトの労働条件を生成
@@ -23,7 +27,6 @@ export function createDefaultConditions(): WorkConditions {
   };
 }
 
-
 export function calculateIncome(conditions: WorkConditions): CalculationResult {
   const { hourly, weeklySchedule, selectedYear, selectedMonth } = conditions;
 
@@ -32,8 +35,16 @@ export function calculateIncome(conditions: WorkConditions): CalculationResult {
     const workDays = calculateMonthlyWorkDays(selectedYear, selectedMonth);
 
     // 曜日別日額
-    const weekdayDaily = hourly * ((weeklySchedule.monday + weeklySchedule.tuesday + weeklySchedule.wednesday + weeklySchedule.thursday + weeklySchedule.friday) / 5);
-    const holidayDaily = hourly * ((weeklySchedule.saturday + weeklySchedule.sunday) / 2);
+    const weekdayDaily =
+      hourly *
+      ((weeklySchedule.monday +
+        weeklySchedule.tuesday +
+        weeklySchedule.wednesday +
+        weeklySchedule.thursday +
+        weeklySchedule.friday) /
+        5);
+    const holidayDaily =
+      hourly * ((weeklySchedule.saturday + weeklySchedule.sunday) / 2);
     const nationalHolidayDaily = weekdayDaily; // 祝日は平日と同じ扱い
 
     // 月収計算（正確な日数）

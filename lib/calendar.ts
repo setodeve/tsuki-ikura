@@ -132,5 +132,7 @@ export function getHolidays(year: number, month: number): string[] {
   const monthStr = month.toString().padStart(2, "0");
   const monthHolidays = holidays[yearStr] || [];
 
-  return monthHolidays.filter((holiday) => holiday.startsWith(`${yearStr}-${monthStr}`));
+  return monthHolidays.filter((holiday) =>
+    holiday.startsWith(`${yearStr}-${monthStr}`),
+  );
 }
