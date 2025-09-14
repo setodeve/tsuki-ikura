@@ -29,6 +29,9 @@ export function InputField({
         <input
           id={inputId}
           type="number"
+          min="0"
+          max="24"
+          step="0.5"
           className={`
             w-full rounded-lg border px-3 py-2 text-sm
             focus:outline-none focus:ring-2
@@ -36,6 +39,11 @@ export function InputField({
               error
                 ? "border-red-300 focus:border-red-500 focus:ring-red-500"
                 : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+            }
+            ${
+              props.readOnly
+                ? "bg-gray-100 text-gray-600 cursor-not-allowed"
+                : ""
             }
           `}
           {...props}

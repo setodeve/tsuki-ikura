@@ -1,39 +1,89 @@
-import type { CalculationResult, WorkConditions } from "./types";
+import { calculateMonthlyWorkDays, getNextMonth } from "./calendar";
+import type { CalculationResult, WorkConditions, WeeklySchedule } from "./types";
+
+/**
+ * デフォルトの労働条件を生成
+ */
+export function createDefaultConditions(): WorkConditions {
+  const nextMonth = getNextMonth();
+
+  return {
+    hourly: 1000,
+    weeklySchedule: {
+      monday: 8,
+      tuesday: 8,
+      wednesday: 8,
+      thursday: 8,
+      friday: 8,
+      saturday: 0,
+      sunday: 0,
+    },
+    selectedYear: nextMonth.year,
+    selectedMonth: nextMonth.month,
+  };
+}
+
 
 export function calculateIncome(conditions: WorkConditions): CalculationResult {
-  const {
-    hourly,
-    hoursWeekday,
-    hoursHoliday,
-    hoursNationalHoliday,
-    weekdaysPerMonth,
-    holidaysPerMonth,
-    nationalHolidaysPerMonth,
-  } = conditions;
+  const { hourly, weeklySchedule, selectedYear, selectedMonth } = conditions;
 
-  // 日額計算
-  const weekdayDaily = hourly * hoursWeekday;
-  const holidayDaily = hourly * hoursHoliday;
-  const nationalHolidayDaily = hourly * hoursNationalHoliday;
+  // 年月が指定されている場合は正確な日数で計算
+  if (selectedYear && selectedMonth) {
+    const workDays = calculateMonthlyWorkDays(selectedYear, selectedMonth);
 
-  // 月額計算
-  const monthly =
-    weekdayDaily * weekdaysPerMonth +
-    holidayDaily * holidaysPerMonth +
-    nationalHolidayDaily * nationalHolidaysPerMonth;
+    // 曜日別日額
+    const weekdayDaily = hourly * ((weeklySchedule.monday + weeklySchedule.tuesday + weeklySchedule.wednesday + weeklySchedule.thursday + weeklySchedule.friday) / 5);
+    const holidayDaily = hourly * ((weeklySchedule.saturday + weeklySchedule.sunday) / 2);
+    const nationalHolidayDaily = weekdayDaily; // 祝日は平日と同じ扱い
 
-  // 週額（平日5日想定）
-  const weekly = weekdayDaily * 5;
+    // 月収計算（正確な日数）
+    const monthly =
+      weekdayDaily * workDays.weekdays +
+      holidayDaily * workDays.weekends +
+      nationalHolidayDaily * workDays.holidays;
 
-  // 年額（月額×12）
+    // その月の総日数
+    const totalDays = workDays.weekdays + workDays.weekends + workDays.holidays;
+
+    // 平均日額
+    const averageDaily = monthly / totalDays;
+
+    // 年額
+    const yearly = monthly * 12;
+
+    return {
+      monthly,
+      averageDaily,
+      yearly,
+      calculationBreakdown: {
+        year: selectedYear,
+        month: selectedMonth,
+        weekdays: workDays.weekdays,
+        weekends: workDays.weekends,
+        holidays: workDays.holidays,
+        totalDays,
+      },
+    };
+  }
+
+  // フォールバック: 平均的な計算
+  const weeksInMonth = 4.33;
+  const weeklyTotalHours =
+    weeklySchedule.monday +
+    weeklySchedule.tuesday +
+    weeklySchedule.wednesday +
+    weeklySchedule.thursday +
+    weeklySchedule.friday +
+    weeklySchedule.saturday +
+    weeklySchedule.sunday;
+
+  const monthly = hourly * weeklyTotalHours * weeksInMonth;
+  const averageDaily = monthly / 30; // 平均的な月の日数
   const yearly = monthly * 12;
 
   return {
     monthly,
-    weekdayDaily,
-    holidayDaily,
-    nationalHolidayDaily,
-    weekly,
+    averageDaily,
     yearly,
   };
 }
@@ -55,32 +105,21 @@ export function validateWorkConditions(
     errors.push("時給は0以上である必要があります");
   }
 
-  const hoursFields = [
-    { field: "hoursWeekday", label: "平日の労働時間" },
-    { field: "hoursHoliday", label: "休日の労働時間" },
-    { field: "hoursNationalHoliday", label: "祝日の労働時間" },
-  ];
+  if (conditions.weeklySchedule) {
+    const dayFields = [
+      { key: "monday", label: "月曜日" },
+      { key: "tuesday", label: "火曜日" },
+      { key: "wednesday", label: "水曜日" },
+      { key: "thursday", label: "木曜日" },
+      { key: "friday", label: "金曜日" },
+      { key: "saturday", label: "土曜日" },
+      { key: "sunday", label: "日曜日" },
+    ];
 
-  for (const { field, label } of hoursFields) {
-    const value = conditions[field as keyof WorkConditions] as number;
-    if (value !== undefined) {
-      if (value < 0 || value > 24) {
-        errors.push(`${label}は0〜24時間の範囲で入力してください`);
-      }
-    }
-  }
-
-  const daysFields = [
-    { field: "weekdaysPerMonth", label: "平日数" },
-    { field: "holidaysPerMonth", label: "休日数" },
-    { field: "nationalHolidaysPerMonth", label: "祝日数" },
-  ];
-
-  for (const { field, label } of daysFields) {
-    const value = conditions[field as keyof WorkConditions] as number;
-    if (value !== undefined) {
-      if (value < 0 || value > 31) {
-        errors.push(`${label}は0〜31日の範囲で入力してください`);
+    for (const { key, label } of dayFields) {
+      const value = conditions.weeklySchedule[key as keyof WeeklySchedule];
+      if (value !== undefined && (value < 0 || value > 24)) {
+        errors.push(`${label}の労働時間は0〜24時間の範囲で入力してください`);
       }
     }
   }

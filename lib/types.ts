@@ -1,20 +1,34 @@
+// 曜日別設定の型定義
+export interface WeeklySchedule {
+  monday: number;
+  tuesday: number;
+  wednesday: number;
+  thursday: number;
+  friday: number;
+  saturday: number;
+  sunday: number;
+}
+
+
 export interface WorkConditions {
   hourly: number;
-  hoursWeekday: number;
-  hoursHoliday: number;
-  hoursNationalHoliday: number;
-  weekdaysPerMonth: number;
-  holidaysPerMonth: number;
-  nationalHolidaysPerMonth: number;
+  weeklySchedule: WeeklySchedule;
+  selectedYear?: number;
+  selectedMonth?: number;
 }
 
 export interface CalculationResult {
   monthly: number;
-  weekdayDaily: number;
-  holidayDaily: number;
-  nationalHolidayDaily: number;
-  weekly: number;
+  averageDaily: number;
   yearly: number;
+  calculationBreakdown?: {
+    year: number;
+    month: number;
+    weekdays: number;
+    weekends: number;
+    holidays: number;
+    totalDays: number;
+  };
 }
 
 export interface Preset {
