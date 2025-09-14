@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 月いくら？ (Tsuki Ikura)
 
-## Getting Started
+![月いくら？のスクリーンショット](public/tsuki-ikura.png)
 
-First, run the development server:
+## 概要
+
+「月いくら？」は、時給制で働く方が月収を素早く把握するためのツールです。
+曜日別に労働時間を設定でき、選択した月の正確な日数・祝日を考慮して収入を計算します。
+
+## 主な機能
+
+### 🗓️ 曜日別労働時間設定
+
+- 月〜日曜日で個別に労働時間を設定
+
+### 📊 分かりやすい結果表示
+
+- **月収**: メインの計算結果
+- **平均日額**: 日給制との比較に便利
+- **年間見込み**: 長期的な収入把握
+
+## 技術スタック
+
+- **フレームワーク**: Next.js 15.5.3 (App Router + Turbopack)
+- **言語**: TypeScript 5
+- **スタイリング**: Tailwind CSS v4
+- **品質管理**: Biome 2.2.0 + lefthook
+- **パッケージ管理**: pnpm
+
+## 開発・実行
+
+### 前提条件
+
+- Node.js 18以上
+- pnpm 10.10.0以上
+
+### インストール・起動
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# 依存関係のインストール
+pnpm install
+
+# 開発サーバー起動
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### その他のコマンド
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# 本番ビルド
+pnpm build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# 本番サーバー起動
+pnpm start
 
-## Learn More
+# コード品質チェック
+pnpm lint
 
-To learn more about Next.js, take a look at the following resources:
+# フォーマット
+pnpm format
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## コード品質
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+pre-commitフック（lefthook）により、コミット前に以下が自動実行されます：
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- コードフォーマット
+- リント
+- ビルド確認
