@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-"tsuki-ikura" (月いくら - "How much per month?") - A web application for hourly wage workers to instantly calculate their monthly income based on hourly rate and working hours.
+"tsuki-ikura" (月いくら - "How much per month?") - A Japanese web application for calculating monthly income from hourly wages. The app uses weekly schedule settings (Monday-Sunday individual hour settings) optimized for freelancers and part-time workers.
 
 ## Tech Stack
 
@@ -18,67 +18,66 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 pnpm install       # Install dependencies
-pnpm dev          # Start development server with Turbopack
+pnpm dev          # Start development server with Turbopack (usually runs on port 3001)
 pnpm build        # Build for production with Turbopack
 pnpm start        # Start production server
 pnpm lint         # Run Biome linter
 pnpm format       # Format code with Biome
 ```
 
-## Project Structure
+## Architecture Overview
 
-- `app/` - Next.js App Router pages and layouts
-- `components/` - Reusable React components (to be created)
-- `lib/` - Utility functions and business logic (to be created)
-- `public/` - Static assets
+### Core Calculation System
 
-## Core Calculation Logic
-
-The application implements these calculations (from spec.md):
+The app uses a **weekly schedule approach** instead of traditional weekday/weekend/holiday categorization:
 
 ```typescript
-// Monthly income calculation
-monthly = hourly * (
-  hoursWeekday * weekdaysPerMonth +
-  hoursHoliday * holidaysPerMonth +
-  hoursNationalHoliday * nationalHolidaysPerMonth
-)
-
-// Reverse calculation (hours to income)
-earningsByHours = hourly * totalHours
-
-// Daily rates
-weekdayDaily = hourly * hoursWeekday
-holidayDaily = hourly * hoursHoliday
-nationalHolidayDaily = hourly * hoursNationalHoliday
+interface WeeklySchedule {
+  monday: number;    // Hours worked on Mondays
+  tuesday: number;   // Hours worked on Tuesdays
+  // ... for each day of week
+}
 ```
 
-## Key Features (MVP)
+**Calculation Logic:**
+1. User sets individual hours for each day of the week
+2. System calculates monthly income using selected month's exact calendar data
+3. Japanese holidays (2024-2026) are automatically factored in via `lib/calendar.ts`
 
-1. **Real-time Calculation**: All inputs trigger instant recalculation
-2. **Multi-day Type Support**: Separate hour/day settings for weekdays, holidays, and national holidays
-3. **Reverse Calculation**: Calculate income from total hours worked
-4. **Presets**: Save/load multiple wage conditions using localStorage
-5. **URL Sharing**: Embed calculation parameters in query strings
+### Key Components Structure
+
+- **WageCalculator** (`components/wage-calculator.tsx`): Main container component
+  - Manages all state and calculation logic
+  - Left column: Input forms (hourly wage + weekly schedule)
+  - Right column: Month selector + results display
+
+- **WeeklySchedule** (`components/weekly-schedule.tsx`): Individual day input forms
+- **InputField** (`components/ui/input-field.tsx`): Standardized input with validation (0-24 hours, 0.5 step)
+- **Calendar utilities** (`lib/calendar.ts`): Japanese holiday data and work day calculations
+
+### Data Flow
+
+1. `WorkConditions` stores: hourly rate + weekly schedule + selected month
+2. `calculateIncome()` in `lib/calculations.ts` performs calculation
+3. Returns `CalculationResult` with: monthly income, average daily rate, yearly projection
+4. Results displayed in unified "計算結果" segment
+
+## Japanese Holiday Integration
+
+The app includes accurate Japanese holiday data (2024-2026) in `lib/calendar.ts`. The `calculateMonthlyWorkDays()` function returns exact weekday/weekend/holiday counts for any month, enabling precise monthly income calculations.
 
 ## Validation Rules
 
-- Working hours: 0-24 hours per day
-- Days per month: 0-31 days
-- Decimal precision: 2 digits maximum
-- All numeric inputs must be positive
+- Working hours: 0-24 hours per day (HTML5 validation + JS validation)
+- Step size: 0.5 hours
+- All calculations use exact calendar data when month is selected
+- Fallback to 4.33 weeks/month average when no month specified
 
 ## Code Conventions
 
-- Use Biome for linting and formatting (already configured)
-- TypeScript strict mode is enabled
+- Use Biome for linting and formatting
+- TypeScript strict mode enabled
 - Path alias `@/*` maps to project root
-- Component structure: Functional components with TypeScript
-- State management: React hooks for local state, consider Zustand for presets
-
-## Performance Requirements
-
-- Initial calculation display: < 10 seconds
-- Input-to-update latency: < 100ms
-- Mobile-first responsive design (iPhone SE baseline)
-- All calculations client-side (no API calls needed)
+- Japanese UI text throughout
+- No comments in code unless explicitly requested
+- Functional components with React hooks for state management
