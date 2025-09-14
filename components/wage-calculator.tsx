@@ -96,6 +96,8 @@ export function WageCalculator() {
             <InputField
               label="時給"
               suffix="円"
+              min="0"
+              step="1"
               value={conditions.hourly || ""}
               onChange={(e) => handleInputChange("hourly", e.target.value)}
             />

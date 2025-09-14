@@ -48,6 +48,9 @@ export function WeeklyScheduleForm({
               <InputField
                 label={fullLabel}
                 suffix="時間"
+                min="0"
+                max="24"
+                step="0.5"
                 value={schedule[key] || ""}
                 onChange={(e) => handleDayChange(key, e.target.value)}
               />

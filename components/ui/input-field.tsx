@@ -29,9 +29,6 @@ export function InputField({
         <input
           id={inputId}
           type="number"
-          min="0"
-          max="24"
-          step="0.5"
           className={`
             w-full rounded-lg border px-3 py-2 text-sm
             focus:outline-none focus:ring-2
