@@ -1,0 +1,12 @@
+pre-commit:
+  commands:
+    format:
+      run: pnpm format
+      glob: "*.{js,jsx,ts,tsx,json,md}"
+      stage_fixed: true
+    lint:
+      run: pnpm lint
+      fail_text: "Linting failed. Please fix the issues before committing."
+    build:
+      run: pnpm build
+      fail_text: "Build failed. Please fix the build errors before committing."
