@@ -30,7 +30,7 @@ export function InputField({
           id={inputId}
           type="number"
           className={`
-            w-full rounded-lg border px-3 py-2 text-sm
+            w-full rounded-lg border px-3 py-2 text-sm text-gray-900
             focus:outline-none focus:ring-2
             [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
             ${
@@ -40,7 +40,7 @@ export function InputField({
             }
             ${
               props.readOnly
-                ? "bg-gray-100 text-gray-600 cursor-not-allowed"
+                ? "bg-gray-50 text-gray-500 cursor-not-allowed"
                 : ""
             }
           `}

@@ -72,8 +72,8 @@ export function WageCalculator() {
         <div className="flex items-start">
           <div className="text-blue-500 mr-3 mt-0.5">💡</div>
           <div>
-            <h2 className="text-sm font-medium text-blue-900 mb-2">使い方</h2>
-            <ol className="text-xs text-blue-800 space-y-1">
+            <h2 className="text-base font-medium text-blue-900 mb-2">使い方</h2>
+            <ol className="text-sm text-blue-800 space-y-1">
               <li>
                 <span className="font-medium">1.</span> 時給を入力
               </li>
@@ -126,7 +126,7 @@ export function WageCalculator() {
                 const [year, month] = e.target.value.split("-").map(Number);
                 handleMonthSelect(year, month);
               }}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {(() => {
                 const options = [];
